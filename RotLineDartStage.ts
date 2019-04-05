@@ -33,6 +33,37 @@ class ScaleUtil {
     }
 }
 
+class DrawingUtil {
+
+    static drawLine(context : CanvasRenderingContext2D, xGap : number) {
+        context.beginPath()
+        context.moveTo(0, 0)
+        context.lineTo(xGap, 0)
+        context.stroke()
+    }
+
+    static drawRLDNode(context : CanvasRenderingContext2D, i : number, scale : number) {
+        const gap : number = w / (nodes + 1)
+        const size : number = gap / sizeFactor
+        const sc1 : number = ScaleUtil.divideScale(scale, 0, 2)
+        const sc2 : number = ScaleUtil.divideScale(scale, 1, 2)
+        const xGap : number = (2 * size) / lines
+        context.lineWidth = Math.min(w, h) / strokeFactor
+        context.lineCap = 'round'
+        context.strokeStyle = foreColor
+        context.save()
+        context.translate(w / 2, gap * (i + 1))
+        for (var j = 0; j < lines; j++) {
+            context.save()
+            context.translate(-size + xGap * j, -h / 2 * ScaleUtil.divideScale(sc2, j, lines))
+            context.rotate(Math.PI / 2 * (ScaleUtil.divideScale(sc1, j, lines)))
+            DrawingUtil.drawLine(context, xGap)
+            context.restore()
+        }
+        context.restore()
+    }
+}
+
 class RotLineDartStage {
 
     canvas : HTMLCanvasElement = document.createElement('canvas')
