@@ -203,3 +203,24 @@ class RotLineDarts {
         this.curr.startUpdating(cb)
     }
 }
+
+class Renderer {
+    rld : RotLineDarts = new RotLineDarts()
+    animator : Animator = new Animator()
+
+    render(context : CanvasRenderingContext2D) {
+        this.rld.draw(context)
+    }
+
+    handleTap(cb : Function) {
+        this.rld.startUpdating(() => {
+            this.animator.start(() => {
+                cb()
+                this.rld.update(() => {
+                    this.animator.stop()
+                    cb()
+                })
+            })
+        })
+    }
+}
