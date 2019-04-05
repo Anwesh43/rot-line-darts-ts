@@ -8,6 +8,7 @@ const strokeFactor : number = 90
 const sizeFactor : number = 2.9
 const foreColor : string = "#283593"
 const backColor : string = "#BDBDBD"
+const delay : number = 20
 
 class ScaleUtil {
 
@@ -52,11 +53,11 @@ class DrawingUtil {
         context.lineCap = 'round'
         context.strokeStyle = foreColor
         context.save()
-        context.translate(w / 2, gap * (i + 1))
+        context.translate(gap * (i + 1), h / 2)
         for (var j = 0; j < lines; j++) {
             context.save()
             context.translate(-size + xGap * j, -h / 2 * ScaleUtil.divideScale(sc2, j, lines))
-            context.rotate(Math.PI / 2 * (ScaleUtil.divideScale(sc1, j, lines)))
+            context.rotate(-Math.PI / 2 * (ScaleUtil.divideScale(sc1, j, lines)))
             DrawingUtil.drawLine(context, xGap)
             context.restore()
         }
@@ -129,7 +130,7 @@ class Animator {
     start(cb : Function) {
         if (!this.animated) {
             this.animated = true
-            this.interval = setInterval(50, this.interval)
+            this.interval = setInterval(cb, delay)
         }
     }
 
@@ -145,7 +146,7 @@ class RLDNode {
 
     prev : RLDNode
     next : RLDNode
-    state : State
+    state : State = new State()
 
     constructor(private i : number) {
         this.addNeighbor()
@@ -159,7 +160,11 @@ class RLDNode {
     }
 
     draw(context : CanvasRenderingContext2D) {
-
+        DrawingUtil.drawRLDNode(context, this.i, this.state.scale)
+        console.log("drawn")
+        if (this.next) {
+            this.next.draw(context)
+        }
     }
 
     update(cb : Function) {
@@ -185,12 +190,11 @@ class RLDNode {
 }
 
 class RotLineDarts {
-    root : RLDNode = new RLDNode(0)
-    curr : RLDNode = this.root
+    curr : RLDNode = new RLDNode(0)
     dir : number = 1
 
     draw(context : CanvasRenderingContext2D) {
-        this.root.draw(context)
+        this.curr.draw(context)
     }
 
     update(cb : Function) {
